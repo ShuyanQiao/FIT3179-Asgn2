@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Australia Weather & Air Pollution (2024) — FIT3179</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fafafa;color:#111;font-size:20px}
+    header{padding:28px 20px 8px;background:#fff;border-bottom:1px solid #eee}
+    h1{margin:0 0 8px;font-size:40px;text-align:center}
+    p.lead{margin:0;color:#444;text-align:center}
+    .container{max-width:1200px;margin:0 auto;padding:18px 20px 40px}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px;justify-items:center}
+    @media(min-width:1024px){.grid{grid-template-columns:1.1fr 0.9fr;justify-items:center}}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+    .card h2{margin:4px 0 8px;font-size:24px}
+    footer{color:#555;font-size:16px;padding:16px 20px 40px}
+    .note{font-size:17px;color:#666}
+    /* Center charts produced by vega-embed */
+    .card .vega-embed{display:block;margin-left:auto;margin-right:auto}
+    .card .vega-embed svg,.card .vega-embed canvas{display:block;margin:0 auto}
+    /* Center Vega-Lite parameter bindings (dropdowns/sliders) */
+    .card .vega-embed .vega-bindings{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px}
+    .card .vega-embed .vega-bind{margin:0 4px}
+    /* Prominent sub-title style for charts */
+    .subhead{display:block;text-align:center;font-weight:700;font-size:19px;color:#111;margin:6px 0 8px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Climate Patterns and Air Pollution in Australia</h1>
+      <p class="lead">Exploring the relationship between temperature, rainfall, humidity and PM2.5 levels across Australian states.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 1) WHY -->
+    <section class="card">
+      <h2>Overview</h2>
+      <p class="note">Australia’s diverse climate plays a crucial role in shaping its air quality. The country’s vast north–south span creates sharp contrasts—from the tropical heat of the Northern Territory to the cooler southern coastlines.
+        These climatic differences not only define how people experience weather, but also determine how pollutants form, disperse, and persist in the atmosphere.</p>
+      <div class="grid" style="grid-template-columns:1fr; gap:16px;">
+        <div>
+          <div id="map_temp"></div>
+          <p class="note">Northern Australia stays consistently warmer than the south. Higher temperatures in NT and QLD set the stage for higher pollution risk when winds are calm.</p>
+        </div>
+        <div>
+          <div id="map_pm25"></div>
+          <p class="note">PM2.5 hotspots appear in the north and west. Cooler and wetter states such as TAS and VIC show the lowest annual PM2.5 levels.</p>
+        </div>
+      </div>
+    </section>
+
+    
+
+    
+
+    <!-- 4) SO WHAT -->
+    <section class="card" style="margin-top:18px;">
+      <h2>PM2.5 ranking by state (2024)</h2>
+      <div id="pm25_bars"></div>
+      <p class="note">Ranking confirms Northern Territory and Western Australia are most exposed in 2024, while South Australia sits at the bottom. The dotted line represents the WHO annual guideline (5 µg/m³) — showing that most Australian states exceed the recommended safe exposure limit.</p>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <h2>Temperature vs Humidity — Joint Distribution (2024)</h2>
+      <div id="lines"></div>
+      <p class="note">2D heatmap of temperature and humidity for the selected state. Darker cells indicate combinations that occur more frequently.</p>
+    </section>
+
+    <!-- Relationship moved to the end -->
+    <section class="card" style="margin-top:18px;">
+      <h2>Weather vs PM2.5 Relationship</h2>
+      <span class="subhead" style="max-width:900px;margin-left:auto;margin-right:auto;display:block;">Weather vs PM2.5 (size = rainfall; colour = state)</span>
+      <div id="scatter"></div>
+      <p class="note" style="text-align:center;margin-top:6px;">XField: choose Avg Temp, Rainfall, or Humidity</p>
+      <p class="note">While the scatter plots reveal no strong linear correlation between PM2.5 and individual weather factors, a general tendency emerges —
+        warmer and drier regions (such as the Northern Territory and Western Australia) record higher PM2.5 levels,
+        whereas cooler, wetter states (like Tasmania and Victoria) maintain cleaner air.
+        This suggests that climate sets the environmental background for pollution dispersion, even if other local factors (such as emissions and wind) also play key roles.</p>
+    </section>
+
+    <!-- Conclusion -->
+    <section class="card" style="margin-top:18px;">
+      <h2>Conclusion</h2>
+      <p class="note">
+        2024 data shows a clear spatial and climatic pattern for air quality in Australia. Warmer northern states tend to
+        experience higher annual PM2.5, while cooler and wetter southern states remain cleaner. Most states still sit above the WHO annual guideline of 5 µg/m³. These findings suggest two
+        priorities: (1) reduce emissions and dust sources during hot, dry periods; and (2) coordinate climate adaptation
+        with air‑quality management — early warnings during heat and drought, more green/blue infrastructure, and
+        regional controls around high‑risk seasons. Together, these actions can lower exposure and protect public health.
+      </p>
+    </section>
+
+    
+  </main>
+
+  <footer class="container">
+    <div>
+      <strong>Data sources:</strong>
+      Air quality — ABS Measuring What Matters, Sustainable: Air quality
+      (<a href="https://www.abs.gov.au/statistics/measuring-what-matters/measuring-what-matters-themes-and-indicators/sustainable/air-quality" target="_blank" rel="noopener">link</a>);
+      Weather — Kaggle dataset “Australia Daily Weather Observation”, scraped from the Australian Bureau of Meteorology
+      (<a href="https://www.kaggle.com/datasets/owls0711/australia-daily-weather-observation" target="_blank" rel="noopener">link</a>).
+      <br/>
+      <strong>Author:</strong> Shuyan Qiao<br/>
+      <strong>Date:</strong> 11/10/2025
+    </div>
+  </footer>
+
+  <script>
+    // ---- Load CSVs (must be in the same folder as this HTML) ----
+    const STATE_CSV = "weather_pollution_state_2024.csv";
+    const DETAIL_CSV = "weather_detail_2024.csv";
+
+    // Helper: load CSV via vega loader then render charts
+    const loader = vega.loader();
+
+    Promise.all([loader.load(STATE_CSV), loader.load(DETAIL_CSV)])
+      .then(([stateText, detailText]) => {
+        const stateData = vega.read(stateText, {type: "csv", parse: "auto"});
+        const detailData = vega.read(detailText, {type: "csv", parse: "auto"});
+
+        // ------- Map: PM2.5 by State -------
+        const mapSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "width": 600,
+          "height": 420,
+          "title": "PM2.5 by State (2024)",
+          "projection": {
+            "type": "conicEqualArea",
+            "rotate": [-134, 0, 0],
+            "center": [0, -28],
+            "parallels": [-18, -36],
+            "scale": 580
+          },
+          "layer": [
+            {
+              "data": {
+                "url": "ne_admin_1_states_provinces.json",
+                "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
+              },
+              "transform": [
+                {"filter": {"field": "properties.admin", "equal": "Australia"}}
+              ],
+              "mark": {"type": "geoshape", "stroke": "#6c7a89", "strokeWidth": 0.6, "filled": false}
+            },
+            {
+              "data": {
+                "url": "ne_admin_1_states_provinces.json",
+                "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
+              },
+              "transform": [
+                {"filter": {"field": "properties.admin", "equal": "Australia"}},
+                {
+                  "lookup": "properties.name",
+                  "from": {
+                    "data": {"values": stateData},
+                    "key": "state",
+                    "fields": ["pm25_mean", "avg_temp", "humidity", "rainfall"]
+                  }
+                }
+              ],
+              "mark": {"type": "geoshape", "stroke": "#ffffff", "strokeWidth": 1},
+              "encoding": {
+                "color": {
+                  "field": "pm25_mean",
+                  "type": "quantitative",
+                  "title": "PM2.5 (µg/m³)",
+                  "scale": {"type": "quantize", "scheme": {"name": "oranges", "count": 7}, "domain": [4, 12]},
+                  "legend": {"gradientLength": 160}
+                },
+                "tooltip": [
+                  {"field": "properties.name", "type": "nominal", "title": "State"},
+                  {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)", "format": ".2f"},
+                  {"field": "avg_temp", "type": "quantitative", "title": "Avg temp (°C)", "format": ".2f"},
+                  {"field": "humidity", "type": "quantitative", "title": "Humidity (%)", "format": ".2f"},
+                  {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)", "format": ".0f"}
+                ]
+              }
+            }
+          ],
+          "config": {"view": {"stroke": null}}
+        };
+
+        // WHY: Temperature choropleth (uses avg_temp)
+        const tempMapSpec = JSON.parse(JSON.stringify(mapSpec));
+        tempMapSpec.encoding = undefined; // clear top-level
+        tempMapSpec.title = "Average Temperature by State (°C, 2024)";
+        tempMapSpec.layer[1].encoding = {
+          "color": {
+            "field": "avg_temp",
+            "type": "quantitative",
+            "title": "Avg Temp (°C)",
+            "scale": {"type": "quantize", "scheme": {"name": "blues", "count": 7}, "domain": [14, 33]},
+            "legend": {"gradientLength": 160}
+          },
+          "tooltip": [
+            {"field": "properties.name", "type": "nominal", "title": "State"},
+            {"field": "avg_temp", "type": "quantitative", "title": "Avg Temp (°C)", "format": ".2f"},
+            {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)", "format": ".0f"},
+            {"field": "humidity", "type": "quantitative", "title": "Humidity (%)", "format": ".0f"}
+          ]
+        };
+
+
+        // ------- Scatter: Weather vs PM2.5 -------
+        const scatterSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "width": 900, "height": 420,
+          "autosize": {"type": "fit-x", "contains": "padding"},
+          "data": {"values": stateData},
+          "params": [
+            {"name": "XField", "value": "avg_temp",
+             "bind": {"input": "select", "options": ["avg_temp","rainfall","humidity"],
+                      "labels": ["Avg Temp (°C)", "Rainfall (mm)", "Humidity (%)"]}}
+          ],
+          "transform": [
+            {"calculate": "datum[ XField ]", "as": "xval"}
+          ],
+          "mark": {"type": "circle"},
+          "encoding": {
+            "x": {"field": "xval", "type": "quantitative",
+                  "title": {"expr": "XField == 'avg_temp' ? 'Avg Temp (°C)' : (XField == 'rainfall' ? 'Rainfall (mm)' : 'Humidity (%)')"}},
+            "y": {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)"},
+            "size": {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)",
+                      "legend": {"orient": "top", "direction": "horizontal"}},
+            "color": {"field": "state", "type": "nominal",
+                      "legend": {"title": "State", "orient": "top", "direction": "horizontal"}},
+            "tooltip": [
+              {"field": "state", "type": "nominal"},
+              {"field": "avg_temp", "type": "quantitative", "title": "Avg Temp (°C)", "format": ".2f"},
+              {"field": "humidity", "type": "quantitative", "title": "Humidity (%)", "format": ".2f"},
+              {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)", "format": ".0f"},
+              {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)", "format": ".2f"}
+            ]
+          }
+        };
+
+        
+        const stateList = [...new Set(stateData.map(d => d.state))].sort();
+        const defaultState = stateList.includes("New South Wales") ? "New South Wales" : stateList[0];
+
+        const monthOptions = [
+          {label:"All", value:0},
+          {label:"Jan", value:1},{label:"Feb", value:2},{label:"Mar", value:3},{label:"Apr", value:4},
+          {label:"May", value:5},{label:"Jun", value:6},{label:"Jul", value:7},{label:"Aug", value:8},
+          {label:"Sep", value:9},{label:"Oct", value:10},{label:"Nov", value:11},{label:"Dec", value:12}
+        ];
+
+        const linesSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "width": 1100,
+          "height": 360,
+          "data": {"values": detailData},
+          "params": [
+            {"name": "ChosenState", "value": defaultState,
+             "bind": {"input": "select", "options": stateList, "name": "State: "}}
+          ],
+          "transform": [
+            {"filter": "datum.state == ChosenState"}
+          ],
+          "mark": "rect",
+          "encoding": {
+            "x": {"field": "temp3pm", "bin": {"maxbins": 30}, "title": "Temperature (°C)"},
+            "y": {"field": "humidity3pm", "bin": {"maxbins": 30}, "title": "Humidity (%)"},
+            "color": {"aggregate": "count", "title": "Frequency", "scale": {"scheme": "blues"}}
+          },
+          "config": {"view": {"stroke": null}}
+        };
+
+
+
+        vegaEmbed("#map_temp", tempMapSpec, {actions:false, renderer:"svg"});
+        vegaEmbed("#map_pm25", mapSpec, {actions:false, renderer:"svg"});
+        vegaEmbed("#scatter", scatterSpec, {actions:false, renderer:"svg"});
+        vegaEmbed("#lines", linesSpec,  {actions:false, renderer:"svg"});
+        
+        const barsSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": {"values": stateData},
+          "transform": [
+            {"filter": {"not": {"field": "state", "equal": "Australia's Offshore Islands"}}}
+          ],
+          "width": 1100,
+          "height": 420,
+          "layer": [
+            {
+              "mark": {"type": "bar", "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
+              "encoding": {
+                "x": {"field": "state", "type": "nominal", "sort": "-y", "title": "State", "axis": {"labelAngle": -30, "labelLimit": 140}},
+                "y": {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)"},
+                "color": {"field": "pm25_mean", "type": "quantitative", "scale": {"type": "quantize", "scheme": {"name": "oranges", "count": 7}, "domain": [4, 12]}},
+                "tooltip": [
+                  {"field": "state", "type": "nominal"},
+                  {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)", "format": ".2f"},
+                  {"field": "avg_temp", "type": "quantitative", "title": "Avg Temp (°C)", "format": ".1f"},
+                  {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)", "format": ","}
+                ]
+              }
+            },
+            {
+              "mark": {"type": "rule", "strokeDash": [4,2], "color": "#00796B", "size": 3.5},
+              "encoding": {
+                "y": {"datum": 5}
+              }
+            },
+            {
+              "mark": {"type": "text", "align": "right", "dx": -10, "dy": -10, "fontSize": 14, "fontWeight": "bold", "fill": "#00796B", "background": "#ffffffcc"},
+              "encoding": {
+                "x": {"value": 1090},
+                "y": {"datum": 5},
+                "text": {"value": "WHO guideline (5 µg/m³)"}
+              }
+            }
+          ]
+        };
+        vegaEmbed("#pm25_bars", barsSpec, {actions:false, renderer:"svg"});
+      })
+      .catch(err => {
+        document.body.insertAdjacentHTML("beforeend",
+          `<pre style="color:#b00020;padding:12px">${err}</pre>`);
+      });
+  </script>
+</body>
+</html>
