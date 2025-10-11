@@ -1,0 +1,109 @@
+state,Year,Month,Temperature,Humidity,Rainfall
+Australia's Offshore Islands,2024,1,25.33,77.96,5.34
+Australia's Offshore Islands,2024,2,25.66,74.44,3.05
+Australia's Offshore Islands,2024,3,24.87,74.43,5.81
+Australia's Offshore Islands,2024,4,23.89,74.27,5.18
+Australia's Offshore Islands,2024,5,22.6,73.13,1.57
+Australia's Offshore Islands,2024,6,21.51,72.33,3.51
+Australia's Offshore Islands,2024,7,20.65,72.68,2.93
+Australia's Offshore Islands,2024,8,21.3,72.9,1.84
+Australia's Offshore Islands,2024,9,21.73,73.98,2.16
+Australia's Offshore Islands,2024,10,22.55,73.38,1.45
+Australia's Offshore Islands,2024,11,22.03,78.27,4.74
+Australia's Offshore Islands,2024,12,24.7,76.73,7.15
+Australian Capital Territory,2024,1,22.71,59.54,5.28
+Australian Capital Territory,2024,2,24.1,52.25,1.86
+Australian Capital Territory,2024,3,23.09,43.99,1.23
+Australian Capital Territory,2024,4,16.41,53.4,2.9
+Australian Capital Territory,2024,5,12.86,61.24,1.42
+Australian Capital Territory,2024,6,8.83,65.02,1.32
+Australian Capital Territory,2024,7,7.86,67.13,1.37
+Australian Capital Territory,2024,8,12.11,59.63,1.16
+Australian Capital Territory,2024,9,13.86,47.1,1.18
+Australian Capital Territory,2024,10,17.88,44.99,1.28
+Australian Capital Territory,2024,11,22.17,46.73,1.99
+Australian Capital Territory,2024,12,24.86,38.82,3.83
+New South Wales,2024,1,27.93,55.73,3.01
+New South Wales,2024,2,28.16,52.42,2.54
+New South Wales,2024,3,26.68,50.25,1.53
+New South Wales,2024,4,21.57,52.75,3.31
+New South Wales,2024,5,18.14,59.89,3.05
+New South Wales,2024,6,14.81,57.8,2.22
+New South Wales,2024,7,14.36,57.48,1.69
+New South Wales,2024,8,18.93,52.11,1.47
+New South Wales,2024,9,20.2,42.05,1.57
+New South Wales,2024,10,22.72,44.86,1.26
+New South Wales,2024,11,25.87,50.67,2.69
+New South Wales,2024,12,28.73,43.75,1.97
+Northern Territory,2024,1,32.8,60.81,14.63
+Northern Territory,2024,2,33.46,60.36,7.25
+Northern Territory,2024,3,31.65,65.71,12.41
+Northern Territory,2024,4,30.97,46.02,0.71
+Northern Territory,2024,5,29.99,45.13,0.27
+Northern Territory,2024,6,28.32,34.37,0.05
+Northern Territory,2024,7,27.56,32.42,0.1
+Northern Territory,2024,8,32.7,25.44,0.0
+Northern Territory,2024,9,33.22,31.0,0.75
+Northern Territory,2024,10,36.64,29.24,1.27
+Northern Territory,2024,11,35.18,42.08,3.05
+Northern Territory,2024,12,35.35,46.82,5.72
+Queensland,2024,1,29.32,66.2,6.46
+Queensland,2024,2,28.93,62.27,6.82
+Queensland,2024,3,26.86,66.78,2.53
+Queensland,2024,4,25.94,60.56,1.96
+Queensland,2024,5,23.13,61.48,0.74
+Queensland,2024,6,21.22,51.23,0.44
+Queensland,2024,7,19.82,53.68,0.77
+Queensland,2024,8,23.41,51.62,1.88
+Queensland,2024,9,24.94,49.33,1.13
+Queensland,2024,10,25.91,55.24,1.97
+Queensland,2024,11,27.48,61.87,5.31
+Queensland,2024,12,28.69,62.33,7.91
+South Australia,2024,1,26.73,47.71,1.0
+South Australia,2024,2,27.68,39.03,0.03
+South Australia,2024,3,26.86,41.7,0.1
+South Australia,2024,4,19.18,52.26,0.28
+South Australia,2024,5,18.79,49.75,0.3
+South Australia,2024,6,14.75,63.31,1.69
+South Australia,2024,7,14.33,61.44,1.59
+South Australia,2024,8,18.04,56.02,0.94
+South Australia,2024,9,18.1,50.51,0.74
+South Australia,2024,10,22.58,45.06,0.52
+South Australia,2024,11,23.98,45.68,1.09
+South Australia,2024,12,26.19,41.55,0.62
+Tasmania,2024,1,20.26,58.4,1.74
+Tasmania,2024,2,21.04,51.79,0.51
+Tasmania,2024,3,19.49,54.98,0.61
+Tasmania,2024,4,16.03,62.24,1.65
+Tasmania,2024,5,13.74,67.86,1.21
+Tasmania,2024,6,10.96,71.19,1.86
+Tasmania,2024,7,11.05,70.03,2.89
+Tasmania,2024,8,12.78,71.42,3.44
+Tasmania,2024,9,12.41,65.48,3.35
+Tasmania,2024,10,14.98,60.13,1.76
+Tasmania,2024,11,17.2,60.93,1.58
+Tasmania,2024,12,18.85,61.2,3.18
+Victoria,2024,1,24.1,54.04,2.5
+Victoria,2024,2,26.38,38.56,0.36
+Victoria,2024,3,24.85,39.82,0.26
+Victoria,2024,4,17.37,57.66,1.71
+Victoria,2024,5,15.83,58.9,0.93
+Victoria,2024,6,11.57,66.15,1.2
+Victoria,2024,7,11.49,69.43,1.93
+Victoria,2024,8,15.17,59.73,1.13
+Victoria,2024,9,14.99,58.55,1.39
+Victoria,2024,10,19.06,49.45,1.35
+Victoria,2024,11,22.42,45.45,1.84
+Victoria,2024,12,25.14,39.34,1.4
+Western Australia,2024,1,30.47,45.39,0.93
+Western Australia,2024,2,31.79,41.46,0.75
+Western Australia,2024,3,28.86,48.29,1.89
+Western Australia,2024,4,27.72,37.52,0.28
+Western Australia,2024,5,25.05,46.31,1.88
+Western Australia,2024,6,21.23,56.07,2.71
+Western Australia,2024,7,20.59,55.87,2.76
+Western Australia,2024,8,21.86,57.04,2.95
+Western Australia,2024,9,24.27,51.12,0.9
+Western Australia,2024,10,26.33,51.36,0.99
+Western Australia,2024,11,27.64,49.14,1.08
+Western Australia,2024,12,30.33,47.18,1.21

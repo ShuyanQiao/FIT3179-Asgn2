@@ -67,6 +67,13 @@
     </section>
 
     <section class="card" style="margin-top:18px;">
+      <h2>Monthly Temperature Trends (2024)</h2>
+      <span class="subhead" style="max-width:900px;margin-left:auto;margin-right:auto;display:block;">x = Month, y = Temperature, color = state</span>
+      <div id="monthly_lines"></div>
+      <p class="note">Default view shows all states; users can filter a specific state or switch between indicators (Temperature, Humidity, Rainfall) through a dropdown menu.</p>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
       <h2>Temperature vs Humidity — Joint Distribution (2024)</h2>
       <div id="lines"></div>
       <p class="note">2D heatmap of temperature and humidity for the selected state. Darker cells indicate combinations that occur more frequently.</p>
@@ -120,10 +127,15 @@
     // Helper: load CSV via vega loader then render charts
     const loader = vega.loader();
 
-    Promise.all([loader.load(STATE_CSV), loader.load(DETAIL_CSV)])
-      .then(([stateText, detailText]) => {
+    Promise.all([
+      loader.load(STATE_CSV),
+      loader.load(DETAIL_CSV),
+      loader.load("weather_monthly_avg_2024.csv")
+    ])
+      .then(([stateText, detailText, monthlyText]) => {
         const stateData = vega.read(stateText, {type: "csv", parse: "auto"});
         const detailData = vega.read(detailText, {type: "csv", parse: "auto"});
+        const monthlyData = vega.read(monthlyText, {type: "csv", parse: "auto"});
 
         // ------- Map: PM2.5 by State -------
         const mapSpec = {
@@ -320,6 +332,55 @@
           ]
         };
         vegaEmbed("#pm25_bars", barsSpec, {actions:false, renderer:"svg"});
+
+        // ------- Multi-line chart: Monthly trends -------
+        const metricOptions = [
+          {label: "Temperature (°C)", value: "Temperature"},
+          {label: "Humidity (%)", value: "Humidity"},
+          {label: "Rainfall (mm)", value: "Rainfall"}
+        ];
+
+        const allStatesMonthly = [...new Set(monthlyData.map(d => d.state))].sort();
+        const defaultMonthlyState = "All";
+
+        const monthlyLinesSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "width": 1100,
+          "height": 420,
+          "data": {"values": monthlyData},
+          "params": [
+            {"name": "ChosenMetric", "value": "Temperature",
+             "bind": {"input": "select", "options": metricOptions.map(o=>o.value), "labels": metricOptions.map(o=>o.label), "name": "Metric: "}},
+            {"name": "ChosenState", "value": defaultMonthlyState,
+             "bind": {"input": "select", "options": [defaultMonthlyState, ...allStatesMonthly], "name": "State: "}}
+          ],
+          "transform": [
+            {"calculate": "format(datum.Month, '02d')", "as": "MonthPad"},
+            {"calculate": "(ChosenState == 'All' ? true : datum.state == ChosenState)", "as": "stateKeep"},
+            {"filter": "datum.stateKeep"},
+            {"calculate": "datum[ChosenMetric]", "as": "yval"}
+          ],
+          "mark": {"type": "line", "point": true},
+          "encoding": {
+            "x": {"field": "MonthPad", "type": "ordinal", "title": "Month",
+                   "sort": ["01","02","03","04","05","06","07","08","09","10","11","12"],
+                   "axis": {"labelExpr": "datum.label == '01' ? 'Jan' : datum.label == '02' ? 'Feb' : datum.label == '03' ? 'Mar' : datum.label == '04' ? 'Apr' : datum.label == '05' ? 'May' : datum.label == '06' ? 'Jun' : datum.label == '07' ? 'Jul' : datum.label == '08' ? 'Aug' : datum.label == '09' ? 'Sep' : datum.label == '10' ? 'Oct' : datum.label == '11' ? 'Nov' : 'Dec'"}},
+            "y": {"field": "yval", "type": "quantitative",
+                   "title": {"expr": "ChosenMetric == 'Temperature' ? 'Temperature (°C)' : (ChosenMetric == 'Humidity' ? 'Humidity (%)' : 'Rainfall (mm)')"}},
+            "color": {"field": "state", "type": "nominal",
+                      "scale": {"domain": allStatesMonthly, "scheme": {"name": "tableau10"}},
+                      "legend": {"title": "State", "orient": "top", "direction": "horizontal"}},
+            "tooltip": [
+              {"field": "state", "type": "nominal"},
+              {"field": "Month", "type": "ordinal", "title": "Month"},
+              {"field": "Temperature", "type": "quantitative", "title": "Temperature (°C)", "format": ".2f"},
+              {"field": "Humidity", "type": "quantitative", "title": "Humidity (%)", "format": ".2f"},
+              {"field": "Rainfall", "type": "quantitative", "title": "Rainfall (mm)", "format": ".2f"}
+            ]
+          },
+          "config": {"view": {"stroke": null}}
+        };
+        vegaEmbed("#monthly_lines", monthlyLinesSpec, {actions:false, renderer:"svg"});
       })
       .catch(err => {
         document.body.insertAdjacentHTML("beforeend",
