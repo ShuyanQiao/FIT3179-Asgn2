@@ -27,6 +27,11 @@
     .card .vega-embed .vega-bind{margin:0 4px}
     /* Prominent sub-title style for charts */
     .subhead{display:block;text-align:center;font-weight:700;font-size:19px;color:#111;margin:6px 0 8px}
+    /* Overview annotations */
+    .annot-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0}
+    .annot-controls{display:flex;gap:8px;align-items:center;justify-content:center;font-size:16px;color:#444}
+    .annot{max-width:780px;background:#fffef5;border:1px dashed #e0e0e0;border-radius:10px;padding:10px 12px;color:#333;text-align:center}
+    .annot em{font-style:normal;font-weight:600}
   </style>
 </head>
 <body>
@@ -52,6 +57,17 @@
           <div id="map_pm25"></div>
           <p class="note">PM2.5 hotspots appear in the north and west. Cooler and wetter states such as TAS and VIC show the lowest annual PM2.5 levels.</p>
         </div>
+        <div class="annot-wrap">
+          <div class="annot-controls">
+            <label for="annotSelect">Overview note:</label>
+            <select id="annotSelect">
+              <option value="a1">Relationship highlight</option>
+              <option value="a2">North–South gradient</option>
+              <option value="a3">Environmental explanation</option>
+            </select>
+          </div>
+          <div class="annot" id="annotText">Hotter northern regions such as <em>NT</em> and <em>QLD</em> show higher PM2.5 levels, indicating a link between temperature and pollution formation.</div>
+        </div>
       </div>
     </section>
 
@@ -68,7 +84,6 @@
 
     <section class="card" style="margin-top:18px;">
       <h2>Monthly Trends (2024)</h2>
-      <span class="subhead" style="max-width:900px;margin-left:auto;margin-right:auto;display:block;">x = Month, y = Temperature, color = state</span>
       <div id="monthly_lines"></div>
       <p class="note">Default view shows all states; users can filter a specific state or switch between indicators (Temperature, Humidity, Rainfall) through a dropdown menu.</p>
     </section>
@@ -231,13 +246,20 @@
           "transform": [
             {"calculate": "datum[ XField ]", "as": "xval"}
           ],
-          "mark": {"type": "circle"},
+          "mark": {"type": "circle", "opacity": 0.9, "stroke": "#333", "strokeWidth": 0.5},
           "encoding": {
             "x": {"field": "xval", "type": "quantitative",
-                  "title": {"expr": "XField == 'avg_temp' ? 'Avg Temp (°C)' : (XField == 'rainfall' ? 'Rainfall (mm)' : 'Humidity (%)')"}},
-            "y": {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)"},
-            "size": {"field": "rainfall", "type": "quantitative", "title": "Rainfall (mm)",
-                      "legend": {"orient": "top", "direction": "horizontal"}},
+                  "title": {"expr": "XField == 'avg_temp' ? 'Avg Temp (°C)' : (XField == 'rainfall' ? 'Rainfall (mm)' : 'Humidity (%)')"},
+                  "scale": {"zero": false, "nice": true},
+                  "axis": {"tickCount": 8}},
+            "y": {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)",
+                  "scale": {"zero": false, "nice": true},
+                  "axis": {"tickCount": 6}},
+            "size": {"field": "rainfall", "type": "quantitative",
+                      "title": "Rainfall (mm)",
+                      "scale": {"type": "sqrt", "range": [120, 1600]},
+                      "legend": {"orient": "bottom", "direction": "horizontal", "labelFormat": ",.0f", "symbolType": "circle",
+                                 "symbolFillColor": "#64B5F6", "symbolStrokeColor": "#1E88E5", "titleColor": "#444", "labelColor": "#444"}},
             "color": {"field": "state", "type": "nominal",
                       "legend": {"title": "State", "orient": "top", "direction": "horizontal"}},
             "tooltip": [
@@ -360,8 +382,7 @@
             "x": {"field": "MonthPad", "type": "ordinal", "title": "Month",
                    "sort": ["01","02","03","04","05","06","07","08","09","10","11","12"],
                    "axis": {"labelExpr": "datum.label == '01' ? 'Jan' : datum.label == '02' ? 'Feb' : datum.label == '03' ? 'Mar' : datum.label == '04' ? 'Apr' : datum.label == '05' ? 'May' : datum.label == '06' ? 'Jun' : datum.label == '07' ? 'Jul' : datum.label == '08' ? 'Aug' : datum.label == '09' ? 'Sep' : datum.label == '10' ? 'Oct' : datum.label == '11' ? 'Nov' : 'Dec'"}},
-            "y": {"field": "yval", "type": "quantitative",
-                   "title": {"expr": "ChosenMetric == 'Temperature' ? 'Temperature (°C)' : (ChosenMetric == 'Humidity' ? 'Humidity (%)' : 'Rainfall (mm)')"}},
+            "y": {"field": "yval", "type": "quantitative", "title": "Value"},
             "color": {"field": "state", "type": "nominal",
                       "scale": {"domain": allStatesMonthly, "scheme": {"name": "tableau10"}},
                       "legend": {"title": "State", "orient": "top", "direction": "horizontal"}},
@@ -381,6 +402,20 @@
         document.body.insertAdjacentHTML("beforeend",
           `<pre style="color:#b00020;padding:12px">${err}</pre>`);
       });
+    // --- annotation toggler ---
+    (function(){
+      const select = document.getElementById('annotSelect');
+      const text = document.getElementById('annotText');
+      if(!select || !text) return;
+      const messages = {
+        a1: "Hotter northern regions such as <em>NT</em> and <em>QLD</em> show higher PM2.5 levels, indicating a link between temperature and pollution formation.",
+        a2: "North–south climate gradient shapes both temperature and air quality. ↑ North (Hotter, Dustier) \u2003 ↓ South (Cooler, Cleaner)",
+        a3: "Drier inland and tropical zones tend to accumulate dust and smoke particles, while southern coastal climates benefit from rainfall and sea breeze dispersion."
+      };
+      select.addEventListener('change', () => {
+        text.innerHTML = messages[select.value] || messages.a1;
+      });
+    })();
   </script>
 </body>
 </html>
