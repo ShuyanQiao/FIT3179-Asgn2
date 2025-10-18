@@ -4,30 +4,47 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Australia Weather & Air Pollution (2024) — FIT3179</title>
+
+  <!-- Vega libraries for data viz (runtime, grammar, and embedding helper) -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
   <style>
+    /* Base page typography, spacing, and colors */
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fafafa;color:#111;font-size:20px}
+    /* Top bar with title and subtitle */
     header{padding:28px 20px 8px;background:#fff;border-bottom:1px solid #eee}
+    /* Main page title */
     h1{margin:0 0 8px;font-size:40px;text-align:center}
+    /* Subtitle under the h1 */
     p.lead{margin:0;color:#444;text-align:center}
+    /* Center content and limit width */
     .container{max-width:1200px;margin:0 auto;padding:18px 20px 40px}
+    /* Responsive grid used inside cards (1 column on mobile, 2 on desktop) */
     .grid{display:grid;grid-template-columns:1fr;gap:18px;justify-items:center}
     @media(min-width:1024px){.grid{grid-template-columns:1.1fr 0.9fr;justify-items:center}}
+    /* Card look for each section */
     .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+    /* Section headings */
     .card h2{margin:4px 0 8px;font-size:24px}
+    /* Footer text style */
     footer{color:#555;font-size:16px;padding:16px 20px 40px}
+    /* Smaller helper text */
     .note{font-size:17px;color:#666}
+
     /* Center charts produced by vega-embed */
     .card .vega-embed{display:block;margin-left:auto;margin-right:auto}
     .card .vega-embed svg,.card .vega-embed canvas{display:block;margin:0 auto}
+
     /* Center Vega-Lite parameter bindings (dropdowns/sliders) */
     .card .vega-embed .vega-bindings{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px}
     .card .vega-embed .vega-bind{margin:0 4px}
+
     /* Prominent sub-title style for charts */
     .subhead{display:block;text-align:center;font-weight:700;font-size:19px;color:#111;margin:6px 0 8px}
-    /* Overview annotations */
+
+    /* Overview annotations (yellow dashed box with dropdown) */
     .annot-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0}
     .annot-controls{display:flex;gap:8px;align-items:center;justify-content:center;font-size:16px;color:#444}
     .annot{max-width:780px;background:#fffef5;border:1px dashed #e0e0e0;border-radius:10px;padding:10px 12px;color:#333;text-align:center}
@@ -35,6 +52,7 @@
   </style>
 </head>
 <body>
+  <!-- Header with main title and short description -->
   <header>
     <div class="container">
       <h1>Climate Patterns and Air Pollution in Australia</h1>
@@ -42,21 +60,29 @@
     </div>
   </header>
 
+  <!-- Main content wrapper -->
   <main class="container">
-    <!-- 1) WHY -->
+    <!-- 1) Overview section with two choropleth maps and an annotation switcher -->
     <section class="card">
       <h2>Overview</h2>
+      <!-- Context paragraph explaining Australia’s climate and why it matters for air quality -->
       <p class="note">Australia’s diverse climate plays a crucial role in shaping its air quality. The country’s vast north–south span creates sharp contrasts—from the tropical heat of the Northern Territory to the cooler southern coastlines.
         These climatic differences not only define how people experience weather, but also determine how pollutants form, disperse, and persist in the atmosphere.</p>
+
+      <!-- Grid holds temperature map (left), PM2.5 map (right), and annotation switcher (full width) -->
       <div class="grid" style="grid-template-columns:1fr; gap:16px;">
+        <!-- Placeholder for temperature choropleth (rendered via Vega-Lite) -->
         <div>
           <div id="map_temp"></div>
           <p class="note">Northern Australia stays consistently warmer than the south. Higher temperatures in NT and QLD set the stage for higher pollution risk when winds are calm.</p>
         </div>
+        <!-- Placeholder for PM2.5 choropleth (rendered via Vega-Lite) -->
         <div>
           <div id="map_pm25"></div>
           <p class="note">PM2.5 hotspots appear in the north and west. Cooler and wetter states such as TAS and VIC show the lowest annual PM2.5 levels.</p>
         </div>
+
+        <!-- Simple UI to toggle explanatory notes below the maps -->
         <div class="annot-wrap">
           <div class="annot-controls">
             <label for="annotSelect">Overview note:</label>
@@ -66,35 +92,34 @@
               <option value="a3">Environmental explanation</option>
             </select>
           </div>
+          <!-- The text here is updated dynamically by JS (no chart re-render) -->
           <div class="annot" id="annotText">Hotter northern regions such as <em>NT</em> and <em>QLD</em> show higher PM2.5 levels, indicating a link between temperature and pollution formation.</div>
         </div>
       </div>
     </section>
 
-    
-
-    
-
-    <!-- 4) SO WHAT -->
+    <!-- PM2.5 ranking bar chart with WHO guideline rule line -->
     <section class="card" style="margin-top:18px;">
       <h2>PM2.5 ranking by state (2024)</h2>
       <div id="pm25_bars"></div>
       <p class="note">Ranking confirms Northern Territory and Western Australia are most exposed in 2024, while South Australia sits at the bottom. The dotted line represents the WHO annual guideline (5 µg/m³) — showing that most Australian states exceed the recommended safe exposure limit.</p>
     </section>
 
+    <!-- Monthly seasonal trends per state; dropdowns pick metric and state -->
     <section class="card" style="margin-top:18px;">
       <h2>Monthly Trends (2024)</h2>
       <div id="monthly_lines"></div>
       <p class="note">Default view shows all states; users can filter a specific state or switch between indicators (Temperature, Humidity, Rainfall) through a dropdown menu.</p>
     </section>
 
+    <!-- 2D heatmap of temperature vs humidity for one state at a time -->
     <section class="card" style="margin-top:18px;">
       <h2>Temperature vs Humidity — Joint Distribution (2024)</h2>
       <div id="lines"></div>
       <p class="note">2D heatmap of temperature and humidity for the selected state. Darker cells indicate combinations that occur more frequently.</p>
     </section>
 
-    <!-- Relationship moved to the end -->
+    <!-- Bubble chart showing PM2.5 vs a chosen weather variable -->
     <section class="card" style="margin-top:18px;">
       <h2>Weather vs PM2.5 Relationship</h2>
       <span class="subhead" style="max-width:900px;margin-left:auto;margin-right:auto;display:block;">Weather vs PM2.5 (size = rainfall; colour = state)</span>
@@ -106,7 +131,7 @@
         This suggests that climate sets the environmental background for pollution dispersion, even if other local factors (such as emissions and wind) also play key roles.</p>
     </section>
 
-    <!-- Conclusion -->
+    <!-- Final takeaway text block -->
     <section class="card" style="margin-top:18px;">
       <h2>Conclusion</h2>
       <p class="note">
@@ -117,10 +142,9 @@
         regional controls around high‑risk seasons. Together, these actions can lower exposure and protect public health.
       </p>
     </section>
-
-    
   </main>
 
+  <!-- Footer with data sources and author/date -->
   <footer class="container">
     <div>
       <strong>Data sources:</strong>
@@ -135,29 +159,37 @@
   </footer>
 
   <script>
-    // ---- Load CSVs (must be in the same folder as this HTML) ----
-    const STATE_CSV = "weather_pollution_state_2024.csv";
-    const DETAIL_CSV = "weather_detail_2024.csv";
+    // -----------------------------
+    // Data loading (CSV files must sit next to this HTML file)
+    // -----------------------------
+    const STATE_CSV = "weather_pollution_state_2024.csv";   // State-level annual aggregates
+    const DETAIL_CSV = "weather_detail_2024.csv";           // Daily records used for 2D heatmap
 
-    // Helper: load CSV via vega loader then render charts
+    // vega.loader() lets us fetch local files and then parse with vega.read()
     const loader = vega.loader();
 
+    // Load 3 CSVs in parallel, then render all charts once everything is ready
     Promise.all([
       loader.load(STATE_CSV),
       loader.load(DETAIL_CSV),
-      loader.load("weather_monthly_avg_2024.csv")
+      loader.load("weather_monthly_avg_2024.csv") // Monthly averages per state for the multi-line chart
     ])
       .then(([stateText, detailText, monthlyText]) => {
+        // Parse raw CSV text into JS arrays/objects with automatic type inference
         const stateData = vega.read(stateText, {type: "csv", parse: "auto"});
         const detailData = vega.read(detailText, {type: "csv", parse: "auto"});
         const monthlyData = vega.read(monthlyText, {type: "csv", parse: "auto"});
+        // monthlyData columns: state, Year, Month (1-12), Temperature, Humidity, Rainfall
 
-        // ------- Map: PM2.5 by State -------
+        // -----------------------------
+        // Choropleth map: PM2.5 by State (2024)
+        // -----------------------------
         const mapSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "width": 600,
           "height": 420,
           "title": "PM2.5 by State (2024)",
+          // Use a conic equal-area projection tuned for Australia
           "projection": {
             "type": "conicEqualArea",
             "rotate": [-134, 0, 0],
@@ -165,18 +197,22 @@
             "parallels": [-18, -36],
             "scale": 580
           },
+          // Two layers: gray state outlines (context) + colored fills (data)
           "layer": [
             {
+              // Base geography from Natural Earth TopoJSON
               "data": {
                 "url": "ne_admin_1_states_provinces.json",
                 "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
               },
+              // Keep only features where admin == Australia
               "transform": [
                 {"filter": {"field": "properties.admin", "equal": "Australia"}}
               ],
               "mark": {"type": "geoshape", "stroke": "#6c7a89", "strokeWidth": 0.6, "filled": false}
             },
             {
+              // Same geometry, but we join (lookup) PM2.5 values by state name
               "data": {
                 "url": "ne_admin_1_states_provinces.json",
                 "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
@@ -184,6 +220,7 @@
               "transform": [
                 {"filter": {"field": "properties.admin", "equal": "Australia"}},
                 {
+                  // Lookup joins the CSV table into the map features
                   "lookup": "properties.name",
                   "from": {
                     "data": {"values": stateData},
@@ -192,6 +229,7 @@
                   }
                 }
               ],
+              // Filled shapes colored by PM2.5
               "mark": {"type": "geoshape", "stroke": "#ffffff", "strokeWidth": 1},
               "encoding": {
                 "color": {
@@ -211,9 +249,12 @@
           "config": {"view": {"stroke": null}}
         };
 
-        // WHY: Temperature choropleth (uses avg_temp)
-        const tempMapSpec = JSON.parse(JSON.stringify(mapSpec));
-        tempMapSpec.encoding = undefined; // clear top-level
+        // -----------------------------
+        // Choropleth map: Average Temperature by State (2024)
+        // (clone PM2.5 map and switch color field to avg_temp)
+        // -----------------------------
+        const tempMapSpec = JSON.parse(JSON.stringify(mapSpec)); // deep copy base spec
+        tempMapSpec.encoding = undefined; // ensure no stray top-level encoding
         tempMapSpec.title = "Average Temperature by State (°C, 2024)";
         tempMapSpec.layer[1].encoding = {
           "color": {
@@ -231,21 +272,29 @@
           ]
         };
 
-
-        // ------- Scatter: Weather vs PM2.5 -------
+        // -----------------------------
+        // Scatter (bubble) plot: PM2.5 vs chosen weather factor
+        // - x-axis switches among avg_temp / rainfall / humidity
+        // - point size = rainfall, color = state
+        // -----------------------------
         const scatterSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "width": 900, "height": 420,
           "autosize": {"type": "fit-x", "contains": "padding"},
           "data": {"values": stateData},
           "params": [
-            {"name": "XField", "value": "avg_temp",
-             "bind": {"input": "select", "options": ["avg_temp","rainfall","humidity"],
-                      "labels": ["Avg Temp (°C)", "Rainfall (mm)", "Humidity (%)"]}}
+            {
+              "name": "XField", "value": "avg_temp",
+              // Dropdown labels for a friendly UI
+              "bind": {"input": "select", "options": ["avg_temp","rainfall","humidity"],
+                       "labels": ["Avg Temp (°C)", "Rainfall (mm)", "Humidity (%)"]}
+            }
           ],
+          // Compute the x value based on the chosen field name
           "transform": [
             {"calculate": "datum[ XField ]", "as": "xval"}
           ],
+          // Semi-opaque circles with a subtle stroke to separate overlaps
           "mark": {"type": "circle", "opacity": 0.9, "stroke": "#333", "strokeWidth": 0.5},
           "encoding": {
             "x": {"field": "xval", "type": "quantitative",
@@ -255,6 +304,7 @@
             "y": {"field": "pm25_mean", "type": "quantitative", "title": "PM2.5 (µg/m³)",
                   "scale": {"zero": false, "nice": true},
                   "axis": {"tickCount": 6}},
+            // Use sqrt scale so bubble area looks proportional to rainfall
             "size": {"field": "rainfall", "type": "quantitative",
                       "title": "Rainfall (mm)",
                       "scale": {"type": "sqrt", "range": [120, 1600]},
@@ -272,10 +322,11 @@
           }
         };
 
-        
+        // Build helper lists for dropdowns (state selector, months, etc.)
         const stateList = [...new Set(stateData.map(d => d.state))].sort();
         const defaultState = stateList.includes("New South Wales") ? "New South Wales" : stateList[0];
 
+        // Month labels used elsewhere if needed
         const monthOptions = [
           {label:"All", value:0},
           {label:"Jan", value:1},{label:"Feb", value:2},{label:"Mar", value:3},{label:"Apr", value:4},
@@ -283,6 +334,9 @@
           {label:"Sep", value:9},{label:"Oct", value:10},{label:"Nov", value:11},{label:"Dec", value:12}
         ];
 
+        // -----------------------------
+        // 2D Heatmap: Temperature vs Humidity for selected state
+        // -----------------------------
         const linesSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "width": 1100,
@@ -295,6 +349,7 @@
           "transform": [
             {"filter": "datum.state == ChosenState"}
           ],
+          // Bin both axes to create a density grid of counts
           "mark": "rect",
           "encoding": {
             "x": {"field": "temp3pm", "bin": {"maxbins": 30}, "title": "Temperature (°C)"},
@@ -304,23 +359,27 @@
           "config": {"view": {"stroke": null}}
         };
 
-
-
+        // Render the two maps, scatter, and heatmap into their placeholders
         vegaEmbed("#map_temp", tempMapSpec, {actions:false, renderer:"svg"});
         vegaEmbed("#map_pm25", mapSpec, {actions:false, renderer:"svg"});
         vegaEmbed("#scatter", scatterSpec, {actions:false, renderer:"svg"});
         vegaEmbed("#lines", linesSpec,  {actions:false, renderer:"svg"});
-        
+
+        // -----------------------------
+        // Bars: PM2.5 ranking with WHO guideline rule line
+        // -----------------------------
         const barsSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "data": {"values": stateData},
           "transform": [
+            // Remove offshore islands from the ranking
             {"filter": {"not": {"field": "state", "equal": "Australia's Offshore Islands"}}}
           ],
           "width": 1100,
           "height": 420,
           "layer": [
             {
+              // Colored bars sorted by PM2.5 value
               "mark": {"type": "bar", "cornerRadiusTopLeft": 3, "cornerRadiusTopRight": 3},
               "encoding": {
                 "x": {"field": "state", "type": "nominal", "sort": "-y", "title": "State", "axis": {"labelAngle": -30, "labelLimit": 140}},
@@ -333,12 +392,14 @@
               }
             },
             {
+              // Horizontal dashed rule at the WHO guideline (5 µg/m³)
               "mark": {"type": "rule", "strokeDash": [4,2], "color": "#00796B", "size": 3.5},
               "encoding": {
                 "y": {"datum": 5}
               }
             },
             {
+              // Text label near the right edge describing the rule line
               "mark": {"type": "text", "align": "right", "dx": -10, "dy": -10, "fontSize": 14, "fontWeight": "bold", "fill": "#00796B", "background": "#ffffffcc"},
               "encoding": {
                 "x": {"value": 1090},
@@ -350,7 +411,11 @@
         };
         vegaEmbed("#pm25_bars", barsSpec, {actions:false, renderer:"svg"});
 
-        // ------- Multi-line chart: Monthly trends -------
+        // -----------------------------
+        // Multi-line chart: Monthly seasonal trends by state
+        // - Param 1 chooses metric (Temperature/Humidity/Rainfall)
+        // - Param 2 chooses a single state or shows all states
+        // -----------------------------
         const metricOptions = [
           {label: "Temperature (°C)", value: "Temperature"},
           {label: "Humidity (%)", value: "Humidity"},
@@ -358,7 +423,7 @@
         ];
 
         const allStatesMonthly = [...new Set(monthlyData.map(d => d.state))].sort();
-        const defaultMonthlyState = "All";
+        const defaultMonthlyState = "All"; // default to showing all lines
 
         const monthlyLinesSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -366,23 +431,31 @@
           "height": 420,
           "data": {"values": monthlyData},
           "params": [
+            // UI selector for metric
             {"name": "ChosenMetric", "value": "Temperature",
              "bind": {"input": "select", "options": metricOptions.map(o=>o.value), "labels": metricOptions.map(o=>o.label), "name": "Metric: "}},
+            // UI selector for state (or All)
             {"name": "ChosenState", "value": defaultMonthlyState,
              "bind": {"input": "select", "options": [defaultMonthlyState, ...allStatesMonthly], "name": "State: "}}
           ],
           "transform": [
+            // Month padding ensures proper chronological order as ordinal
             {"calculate": "format(datum.Month, '02d')", "as": "MonthPad"},
+            // Keep either all states or only the chosen one
             {"calculate": "(ChosenState == 'All' ? true : datum.state == ChosenState)", "as": "stateKeep"},
             {"filter": "datum.stateKeep"},
+            // Map selected metric column into a unified y-value
             {"calculate": "datum[ChosenMetric]", "as": "yval"}
           ],
+          // Line with points to emphasize monthly positions
           "mark": {"type": "line", "point": true},
           "encoding": {
             "x": {"field": "MonthPad", "type": "ordinal", "title": "Month",
                    "sort": ["01","02","03","04","05","06","07","08","09","10","11","12"],
+                   // Pretty month labels
                    "axis": {"labelExpr": "datum.label == '01' ? 'Jan' : datum.label == '02' ? 'Feb' : datum.label == '03' ? 'Mar' : datum.label == '04' ? 'Apr' : datum.label == '05' ? 'May' : datum.label == '06' ? 'Jun' : datum.label == '07' ? 'Jul' : datum.label == '08' ? 'Aug' : datum.label == '09' ? 'Sep' : datum.label == '10' ? 'Oct' : datum.label == '11' ? 'Nov' : 'Dec'"}},
             "y": {"field": "yval", "type": "quantitative", "title": "Value"},
+            // Fix the color domain so each state keeps a consistent color across filters
             "color": {"field": "state", "type": "nominal",
                       "scale": {"domain": allStatesMonthly, "scheme": {"name": "tableau10"}},
                       "legend": {"title": "State", "orient": "top", "direction": "horizontal"}},
@@ -399,19 +472,28 @@
         vegaEmbed("#monthly_lines", monthlyLinesSpec, {actions:false, renderer:"svg"});
       })
       .catch(err => {
+        // If any file fails to load or a spec has an error, show it on the page
         document.body.insertAdjacentHTML("beforeend",
           `<pre style="color:#b00020;padding:12px">${err}</pre>`);
       });
-    // --- annotation toggler ---
+
+    // -----------------------------
+    // Annotation toggler for the Overview panel
+    // - Pure DOM manipulation; no chart re-rendering required
+    // -----------------------------
     (function(){
       const select = document.getElementById('annotSelect');
       const text = document.getElementById('annotText');
-      if(!select || !text) return;
+      if(!select || !text) return; // Guard: if elements are missing, do nothing
+
+      // Preset messages keyed by dropdown value
       const messages = {
         a1: "Hotter northern regions such as <em>NT</em> and <em>QLD</em> show higher PM2.5 levels, indicating a link between temperature and pollution formation.",
         a2: "North–south climate gradient shapes both temperature and air quality. ↑ North (Hotter, Dustier) \u2003 ↓ South (Cooler, Cleaner)",
         a3: "Drier inland and tropical zones tend to accumulate dust and smoke particles, while southern coastal climates benefit from rainfall and sea breeze dispersion."
       };
+
+      // Update the annotation text whenever the user changes the dropdown
       select.addEventListener('change', () => {
         text.innerHTML = messages[select.value] || messages.a1;
       });
